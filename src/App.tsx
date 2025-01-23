@@ -285,7 +285,11 @@ function App() {
       // Update URL with the resolved address and selected app
       const url = new URL(window.location.href);
       url.searchParams.set('address', resolvedAddress);
-      url.searchParams.set('app', selectedAppId);
+      if (selectedAppId) {
+        url.searchParams.set('app', selectedAppId);
+      } else {
+        url.searchParams.delete('app');
+      }
       window.history.pushState({}, '', url);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -298,7 +302,11 @@ function App() {
     if (submittedAddress) {
       const url = new URL(window.location.href);
       url.searchParams.set('address', submittedAddress);
-      url.searchParams.set('app', selectedAppId);
+      if (selectedAppId) {
+        url.searchParams.set('app', selectedAppId);
+      } else {
+        url.searchParams.delete('app');
+      }
       navigator.clipboard.writeText(url.toString());
     }
   };
@@ -308,7 +316,11 @@ function App() {
     if (submittedAddress) {
       const url = new URL(window.location.href);
       url.searchParams.set('address', submittedAddress);
-      url.searchParams.set('app', appId);
+      if (appId) {
+        url.searchParams.set('app', appId);
+      } else {
+        url.searchParams.delete('app');
+      }
       window.history.pushState({}, '', url);
     }
   };
@@ -368,7 +380,7 @@ function App() {
             </div>
           </form>
 
-          {submittedAddress && selectedAppId && (
+          {submittedAddress && (
             <VoteDisplay address={submittedAddress} selectedAppId={selectedAppId} />
           )}
         </div>
