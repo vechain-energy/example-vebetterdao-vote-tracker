@@ -1,0 +1,1 @@
+export const SUBGRAPH_URL = 'https://graph.vet/subgraphs/name/vebetter/dao';
