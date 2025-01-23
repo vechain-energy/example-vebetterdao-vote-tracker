@@ -80,7 +80,7 @@ function VoteList({ votes, title, selectedAppId }: { votes: any[], title: string
   }, {} as Record<string, typeof votes>);
 
   // Sort rounds in descending order
-  const sortedRounds = Object.entries(votesByRound).sort((a, b) => 
+  const sortedRounds = Object.entries(votesByRound).sort((a, b) =>
     parseInt(b[0]) - parseInt(a[0])
   );
 
@@ -93,7 +93,7 @@ function VoteList({ votes, title, selectedAppId }: { votes: any[], title: string
       <div className="space-y-6">
         {sortedRounds.map(([roundNumber, roundVotes]) => {
           const totalWeight = roundVotes.reduce((sum, vote) => sum + parseFloat(vote.weight), 0);
-          
+
           return (
             <div key={roundNumber} className="bg-white rounded-lg shadow p-4 space-y-4">
               <h3 className="text-lg font-medium border-b pb-2">Round {roundNumber}</h3>
@@ -102,13 +102,12 @@ function VoteList({ votes, title, selectedAppId }: { votes: any[], title: string
                   const weight = parseFloat(vote.weight);
                   const percentage = (weight / totalWeight) * 100;
                   const isTargetApp = vote.app.id.toLowerCase() === selectedAppId.toLowerCase();
-                  
+
                   return (
-                    <div 
+                    <div
                       key={index}
-                      className={`relative ${
-                        isTargetApp ? 'bg-orange-50 border border-orange-200' : 'bg-gray-50 border border-gray-200'
-                      } rounded-lg p-4`}
+                      className={`relative ${isTargetApp ? 'bg-orange-50 border border-orange-200' : 'bg-gray-50 border border-gray-200'
+                        } rounded-lg p-4`}
                     >
                       <div className="flex justify-between items-center">
                         <div className="space-y-1">
@@ -127,10 +126,9 @@ function VoteList({ votes, title, selectedAppId }: { votes: any[], title: string
                           </div>
                         </div>
                       </div>
-                      <div 
-                        className={`absolute bottom-0 left-0 h-1 rounded-b-lg ${
-                          isTargetApp ? 'bg-orange-500' : 'bg-gray-300'
-                        }`}
+                      <div
+                        className={`absolute bottom-0 left-0 h-1 rounded-b-lg ${isTargetApp ? 'bg-orange-500' : 'bg-gray-300'
+                          }`}
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -174,7 +172,7 @@ function VoteDisplay({ address, selectedAppId }: { address: string, selectedAppI
 
   // Combine and merge votes by round
   const combinedVotes = [...directVotes, ...delegateVotes];
-  
+
   if (combinedVotes.length === 0) {
     return (
       <div className="text-gray-500 p-4 bg-yellow-50 rounded-lg border-l-4 border-l-yellow-300">
@@ -187,18 +185,18 @@ function VoteDisplay({ address, selectedAppId }: { address: string, selectedAppI
   const mergedVotes = combinedVotes.reduce((acc, vote) => {
     const roundNumber = vote.round.number;
     const appId = vote.app.id;
-    
+
     if (!acc[roundNumber]) {
       acc[roundNumber] = new Map();
     }
-    
+
     const existingVote = acc[roundNumber].get(appId);
     if (existingVote) {
       existingVote.weight = (parseFloat(existingVote.weight) + parseFloat(vote.weight)).toString();
     } else {
       acc[roundNumber].set(appId, { ...vote });
     }
-    
+
     return acc;
   }, {} as Record<string, Map<string, typeof combinedVotes[0]>>);
 
@@ -207,7 +205,7 @@ function VoteDisplay({ address, selectedAppId }: { address: string, selectedAppI
     roundNumber,
     votes: Array.from(votesMap.values())
   })).sort((a, b) => parseInt(b.roundNumber) - parseInt(a.roundNumber))
-  .flatMap(round => round.votes);
+    .flatMap(round => round.votes);
 
   return <VoteList votes={totalVotes} title="Total Votes" selectedAppId={selectedAppId} />;
 }
@@ -224,18 +222,15 @@ function AppSelector({ value, onChange }: { value: string, onChange: (id: string
   if (error) return (
     <div className="text-red-500 text-sm">Error loading apps: {error.message}</div>
   );
-
   return (
     <div>
-      <label htmlFor="app" className="block text-sm font-medium text-gray-700">
-        Select App to Track
-      </label>
       <select
         id="app"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 h-10 items-center"
+        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 h-10 items-center ${!value && 'text-gray-400'} text-sm`}
       >
+        <option value="">Select App to Track</option>
         {data?.apps.map((app) => (
           <option key={app.id} value={app.id}>
             {app.name || app.id.slice(0, 8)}
@@ -267,14 +262,6 @@ function App() {
       setSelectedAppId(appParam);
     }
   }, []);
-
-  // Initialize selectedAppId when apps are loaded
-  const { data: appsData } = useQuery<AppsQueryResponse>(GET_APPS);
-  useEffect(() => {
-    if (!selectedAppId && appsData?.apps.length) {
-      setSelectedAppId(appsData.apps[0].id);
-    }
-  }, [appsData, selectedAppId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -330,16 +317,19 @@ function App() {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-          <div className="flex items-center gap-2">
-            <Wallet className="w-6 h-6 text-orange-500" />
-            <h1 className="text-2xl font-bold text-gray-900">Blockchain Vote Tracker</h1>
+          <div className='space-y-2'>
+            <div className="flex items-center gap-2">
+              <Wallet className="w-6 h-6 text-orange-500" />
+              <h1 className="text-2xl font-bold text-gray-900">VeBetterDAO Vote Tracker</h1>
+            </div>
+
+            <p className='text-xs text-gray-400'>
+              Track the voting behavior for a specific user. List a single app to highlight. Included in the votes are those cast directly and those made using their veDelegate staking wallet.
+            </p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                Wallet Address or .vet Domain
-              </label>
               <div className="mt-1">
                 <input
                   type="text"
@@ -383,6 +373,9 @@ function App() {
           )}
         </div>
       </div>
+      <footer className="mt-8 text-center text-gray-500 text-xs">
+        Made with <span role="img" aria-label="heart">❤️</span> by <a href="https://vechain.energy" className="text-orange-500 hover:underline">vechain.energy</a>
+      </footer>
     </div>
   );
 }
