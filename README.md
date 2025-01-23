@@ -6,7 +6,7 @@ This project is an example application tracking allocation votes for users on th
 
 The application is deployed on GitHub Pages and can be accessed at the following link:
 
-[VeBetterDAO Vote Tracker Deployment](https://vechain-energy.github.io/example-vebetterdao-vote-tracker/)
+https://vechain-energy.github.io/example-vebetterdao-vote-tracker/
 
 ## Features
 
