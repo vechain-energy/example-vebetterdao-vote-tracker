@@ -1,12 +1,9 @@
 export interface Vote {
   weight: string;
   round: {
-    number: string;
+    number: number;
   };
-  app: {
-    id: string;
-    name: string;
-  };
+  app: App;
 }
 
 export interface VoteQueryResponse {
@@ -14,13 +11,10 @@ export interface VoteQueryResponse {
 }
 
 export interface DelegateVote {
-  app: {
-    id: string;
-    name: string;
-  };
+  app: App;
   weight: string;
   round: {
-    number: string;
+    number: number;
   };
 }
 
@@ -33,9 +27,11 @@ export interface DelegateQueryResponse {
 }
 
 export interface VetDomainResponse {
-  resolverAddress: string;
-  address: string;
-  name: string;
+  domains: {
+    resolvedAddress: {
+      id: string;
+    };
+  }[];
 }
 
 export interface App {
