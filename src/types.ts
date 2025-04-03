@@ -28,8 +28,10 @@ export interface DelegateQueryResponse {
 
 export interface VetDomainResponse {
   domains: {
-    resolvedAddress: {
-      id: string;
+    resolver: {
+      addr: {
+        id: string;
+      };
     };
   }[];
 }

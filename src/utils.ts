@@ -16,8 +16,8 @@ export async function resolveVetDomain(name: string): Promise<string | null> {
     });
 
     const domain = data.domains[0];
-    if (domain && domain.resolvedAddress) {
-      return domain.resolvedAddress.id.toLowerCase();
+    if (domain && domain.resolver.addr.id) {
+      return domain.resolver.addr.id.toLowerCase();
     } else {
       throw new Error('Domain not found');
     }

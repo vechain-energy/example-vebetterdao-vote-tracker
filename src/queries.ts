@@ -54,8 +54,10 @@ export const GET_DELEGATE_VOTES = gql`
 export const RESOLVE_VET_DOMAIN = gql`
   query ResolveVetDomain($name: String!) {
     domains(where: { name: $name }) {
-      resolvedAddress {
-        id
+      resolver {
+        addr {
+          id
+        }
       }
     }
   }
