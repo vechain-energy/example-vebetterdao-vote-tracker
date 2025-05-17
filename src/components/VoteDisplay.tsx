@@ -34,8 +34,7 @@ function VoteDisplay({ address, selectedAppId }: VoteDisplayProps) {
     );
 
     const directVotes = dataDirect?.votes || [];
-    const delegateVotes = dataDelegate?.veDelegateAccounts[0]?.account.AllocationVotes || [];
-
+    const delegateVotes = dataDelegate?.veDelegateAccounts?.flatMap(account => account.account.AllocationVotes) || [];
     // Combine and merge votes by round
     const combinedVotes = [...directVotes, ...delegateVotes];
 
