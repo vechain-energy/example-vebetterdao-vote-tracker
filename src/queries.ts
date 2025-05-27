@@ -18,6 +18,7 @@ export const GET_VOTES = gql`
       first: 1000
       where: {passport_: {id: $address}}
     ) {
+      id
       weight
       round {
         number
@@ -37,6 +38,7 @@ export const GET_DELEGATE_VOTES = gql`
     ) {
       account {
         AllocationVotes(orderBy: timestamp, orderDirection: desc, first: 1000) {
+          id
           app {
             id
             name

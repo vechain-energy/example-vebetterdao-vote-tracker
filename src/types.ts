@@ -1,4 +1,5 @@
 export interface Vote {
+  id: string;
   weight: string;
   round: {
     number: number;
@@ -11,6 +12,7 @@ export interface VoteQueryResponse {
 }
 
 export interface DelegateVote {
+  id: string;
   app: App;
   weight: string;
   round: {
