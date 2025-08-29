@@ -28,6 +28,32 @@ export interface DelegateQueryResponse {
   }[];
 }
 
+export interface Lock2EarnTermVote {
+  id: string;
+  app: App;
+  weight: string;
+  round: {
+    number: number;
+  };
+}
+
+export interface Lock2EarnTermsQueryResponse {
+  veDelegateAccounts: {
+    id: string;
+  }[];
+}
+
+export interface Lock2EarnTermsVotesQueryResponse {
+  lock2EarnTerms: {
+    id: string;
+    veDelegateAccount: {
+      account: {
+        AllocationVotes: Lock2EarnTermVote[];
+      };
+    };
+  }[];
+}
+
 export interface VetDomainResponse {
   domains: {
     resolver: {

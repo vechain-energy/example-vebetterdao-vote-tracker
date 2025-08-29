@@ -1,7 +1,17 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import type { VoteQueryResponse, DelegateQueryResponse } from '../types';
-import { GET_VOTES, GET_DELEGATE_VOTES } from '../queries';
+import type { 
+  VoteQueryResponse, 
+  DelegateQueryResponse, 
+  Lock2EarnTermsQueryResponse,
+  Lock2EarnTermsVotesQueryResponse 
+} from '../types';
+import { 
+  GET_VOTES, 
+  GET_DELEGATE_VOTES, 
+  GET_LOCK2EARN_TERMS,
+  GET_LOCK2EARN_TERMS_VOTES 
+} from '../queries';
 import VoteList from './VoteList';
 
 interface VoteDisplayProps {
@@ -20,24 +30,50 @@ function VoteDisplay({ address, selectedAppId }: VoteDisplayProps) {
         fetchPolicy: 'network-only',
     });
 
-    if (loadingDirect || loadingDelegate) return (
+    // Get veDelegate accounts for lock 2 earn terms
+    const { loading: loadingLock2EarnAccounts, error: errorLock2EarnAccounts, data: dataLock2EarnAccounts } = useQuery<Lock2EarnTermsQueryResponse>(GET_LOCK2EARN_TERMS, {
+        variables: { address, roundNumber: 60 }, // Using round 60 as default
+        fetchPolicy: 'network-only',
+        skip: !address,
+    });
+
+    // Get lock 2 earn terms votes if we have delegate accounts
+    const delegateIds = dataLock2EarnAccounts?.veDelegateAccounts?.map(account => account.id) || [];
+    const { loading: loadingLock2EarnVotes, error: errorLock2EarnVotes, data: dataLock2EarnVotes } = useQuery<Lock2EarnTermsVotesQueryResponse>(GET_LOCK2EARN_TERMS_VOTES, {
+        variables: { 
+            delegateIds
+        },
+        fetchPolicy: 'network-only',
+        skip: delegateIds.length === 0,
+    });
+
+    if (loadingDirect || loadingDelegate || loadingLock2EarnAccounts || loadingLock2EarnVotes) return (
         <div className="text-center p-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
             <p className="mt-2">Loading votes...</p>
         </div>
     );
 
-    if (errorDirect || errorDelegate) return (
+    if (errorDirect || errorDelegate || errorLock2EarnAccounts || errorLock2EarnVotes) return (
         <div className="text-red-500 p-4 bg-red-50 rounded-lg">
-            Error: {errorDirect?.message || errorDelegate?.message}
+            Error: {errorDirect?.message || errorDelegate?.message || errorLock2EarnAccounts?.message || errorLock2EarnVotes?.message}
         </div>
     );
 
     const directVotes = dataDirect?.votes || [];
     const delegateVotes = dataDelegate?.veDelegateAccounts?.flatMap(account => account.account.AllocationVotes) || [];
+    
+    // Extract lock 2 earn term votes
+    const lock2EarnVotes = dataLock2EarnVotes?.lock2EarnTerms?.flatMap(term => 
+        term.veDelegateAccount.account.AllocationVotes
+    ) || [];
+
+    // Combine all votes
+    const allVotes = [...directVotes, ...delegateVotes, ...lock2EarnVotes];
+    
     // Combine and merge votes by round
     const voteMap = new Map();
-    [...directVotes, ...delegateVotes].forEach(vote => {
+    allVotes.forEach(vote => {
         if (!voteMap.has(vote.id)) {
             voteMap.set(vote.id, vote);
         }
@@ -58,7 +94,7 @@ function VoteDisplay({ address, selectedAppId }: VoteDisplayProps) {
         const appId = vote.app.id;
 
         if (!acc[roundNumber]) {
-            acc[roundNumber] = new Map();
+            acc[roundNumber] = new Map<string, typeof combinedVotes[0]>();
         }
 
         const existingVote = acc[roundNumber].get(appId);
@@ -72,11 +108,11 @@ function VoteDisplay({ address, selectedAppId }: VoteDisplayProps) {
     }, {} as Record<string, Map<string, typeof combinedVotes[0]>>);
 
     // Convert merged votes back to array format
-    const totalVotes = Object.entries(mergedVotes).map(([roundNumber, votesMap]) => ({
+    const totalVotes = (Object.entries(mergedVotes) as [string, Map<string, typeof combinedVotes[0]>][]).map(([roundNumber, votesMap]) => ({
         roundNumber,
         votes: Array.from(votesMap.values())
     })).sort((a, b) => parseInt(b.roundNumber) - parseInt(a.roundNumber))
-        .flatMap(round => round.votes);
+        .flatMap(round => round.votes as typeof combinedVotes);
 
     return <VoteList votes={totalVotes} selectedAppId={selectedAppId} />;
 }

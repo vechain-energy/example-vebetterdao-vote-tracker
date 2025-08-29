@@ -71,7 +71,7 @@ function App() {
             </div>
 
             <p className='text-xs text-gray-400'>
-              Track the voting behavior for a specific user. List a single app to highlight. Included in the votes are those cast directly and those made using their veDelegate staking wallet.
+              Track the voting behavior for a specific user. List a single app to highlight. Included in the votes are those cast directly, those made using their veDelegate staking wallet, and lock 2 earn term votes.
             </p>
           </div>
 

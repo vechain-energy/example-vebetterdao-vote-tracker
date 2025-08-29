@@ -53,6 +53,44 @@ export const GET_DELEGATE_VOTES = gql`
   }
 `;
 
+export const GET_LOCK2EARN_TERMS = gql`
+  query Lock2EarnTerms($address: String!) {
+    veDelegateAccounts(
+      where: {token_: {owner: $address}}
+    ) {
+      id
+    }
+  }
+`;
+
+export const GET_LOCK2EARN_TERMS_VOTES = gql`
+  query Lock2EarnTermsVotes($delegateIds: [String!]!) {
+    lock2EarnTerms(
+      first: 100
+      orderBy: createdAt
+      orderDirection: desc
+      where: {owner_in: $delegateIds}
+    ) {
+      id
+      veDelegateAccount {
+        account {
+          AllocationVotes(orderBy: timestamp, orderDirection: desc, first: 1000) {
+            id
+            app {
+              name
+              id
+            }
+            weight
+            round {
+              number
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const RESOLVE_VET_DOMAIN = gql`
   query ResolveVetDomain($name: String!) {
     domains(where: { name: $name }) {
